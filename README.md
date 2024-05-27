@@ -1,1 +1,2 @@
-Goal - make pacman
+Goal - make pacman or anyother game
+
