@@ -8,8 +8,7 @@ pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-
-RED_TRIANGLE =  pygame.image.load("triangle.png")
+RED_TRIANGLE =  pygame.transform.scale(pygame.image.load('triangle.png'),(25,25))
 
 bulletRect = pygame.rect.Rect(screen_width/2,screen_height/2,3,8)
 
@@ -30,7 +29,7 @@ def main():
     # BULLET = pygame.draw.rect(screen,(255,255,255),bulletRect)
     def redraw_window():
 
-        screen.blit(RED_TRIANGLE,(screen_width/2,screen_height))
+        screen.blit(RED_TRIANGLE,(screen_width/2,screen_height-50))
         pygame.display.update()
     keys = pygame.key.get_pressed()
     while running:
