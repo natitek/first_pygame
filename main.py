@@ -2,6 +2,8 @@ import pygame , sys
 from player import Player
 import obstacle
 from alien import Alien
+from laser import Laser
+from random import choice
 class Game:
      def __init__(self):
           player_sprite = Player((screen_width/2,screen_height),5)
@@ -19,7 +21,10 @@ class Game:
         #Alien. setup
 
           self.aliens = pygame.sprite.Group()
+          self.alien_lasers = pygame.sprite.Group()
           self.alien_setup(rows = 6, cols = 8)
+          self.alien_direction = 1
+          
 
      def create_obstacle(self, x_start, y_start, offset_x):
           for row_index, row in enumerate(self.shape):
@@ -42,12 +47,35 @@ class Game:
                     elif 1<= row_index <= 2: alien_sprite = Alien('green',x,y)
                     else: alien_sprite = Alien('blue',x,y)
                     self.aliens.add(alien_sprite)
+     def alien_position_checker(self):
+          all_aliens = self.aliens.sprites()
+          for alien in all_aliens:
+               if alien.rect.right >= screen_width:
+                    self.alien_direction = -1
+                    self.alien_move_down(2)
+               elif alien.rect.left <= 0:
+                    self.alien_direction = 1
+                    self.alien_move_down(2)
+     def alien_move_down(self,distance):
+          for alien in self.aliens.sprites():
+               alien.rect.y += distance
+     def alien_shoot(self):
+          if self.aliens.sprites():
+               random_alien = choice(self.aliens.sprites())
+               laser_sprite = Laser(random_alien.rect.center,6)
+               self.alien_lasers.add(laser_sprite)
      def run(self):
         self.player.update()
+        self.aliens.update(self.alien_direction)
+        self.alien_position_checker()
+        
+        self.alien_lasers.update()
+
         self.player.sprite.lasers.draw(screen)
         self.player.draw(screen)
         self.blocks.draw(screen)
         self.aliens.draw(screen)
+        self.alien_lasers.draw(screen)
         
          
 if __name__ == '__main__': #safeguard for multiple file apps
@@ -57,12 +85,17 @@ if __name__ == '__main__': #safeguard for multiple file apps
     screen = pygame.display.set_mode((screen_width, screen_height))
     clock = pygame.time.Clock()
     game = Game()
+
+    ALIENLASER = pygame.USEREVENT + 1
+    pygame.time.set_timer(ALIENLASER,800)
     while True:
         
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.QUIT()
                     sys.exit()
+                if event.type == ALIENLASER:
+                    game.alien_shoot()
         screen.fill((23,30,23))
      
         game.run()
